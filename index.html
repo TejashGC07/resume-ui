@@ -1,34 +1,40 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <title>AI Resume Analyzer</title>
+</head>
+
 <body>
 
 <h2>AI Resume Analyzer</h2>
 
-<textarea id="resume" placeholder="Paste resume"></textarea><br><br>
-<textarea id="job" placeholder="Paste job description"></textarea><br><br>
+<textarea id="resume" placeholder="Enter resume" rows="4" cols="30"></textarea><br><br>
 
-<button onclick="send()">Analyze</button>
+<textarea id="job" placeholder="Enter job description" rows="4" cols="30"></textarea><br><br>
 
-<pre id="output"></pre>
+<button onclick="analyzeResume()">Analyze</button>
+
+<h3 id="result"></h3>
 
 <script>
-async function send() {
-  const resume = document.getElementById("resume").value;
-  const job = document.getElementById("job").value;
+async function analyzeResume() {
+    const resume = document.getElementById("resume").value;
+    const job = document.getElementById("job").value;
 
-  const formData = new URLSearchParams();
-  formData.append("resume", resume);
-  formData.append("job", job);
+    const response = await fetch("https://ai-resume-analyzers-and-job-fit.onrender.com/analyze", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: `resume=${encodeURIComponent(resume)}&job=${encodeURIComponent(job)}`
+    });
 
-  const res = await fetch("https://ai-resume-analyzers-and-job-fit.onrender.com/analyze", {
-    method: "POST",
-    body: formData
-  });
+    const data = await response.json();
 
-  const data = await res.json();
-
-  document.getElementById("output").innerText =
-    "Score: " + data.score + "%\nSkills: " + data.skills + "\nMissing: " + data.missing;
+    document.getElementById("result").innerText =
+        "Score: " + data.score + "\n" +
+        "Skills: " + data.skills + "\n" +
+        "Missing: " + data.missing;
 }
 </script>
 
