@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>AI Resume Analyzer</h2>
+
+<textarea id="resume" placeholder="Paste resume"></textarea><br><br>
+<textarea id="job" placeholder="Paste job description"></textarea><br><br>
+
+<button onclick="send()">Analyze</button>
+
+<pre id="output"></pre>
+
+<script>
+async function send() {
+  const resume = document.getElementById("resume").value;
+  const job = document.getElementById("job").value;
+
+  const formData = new URLSearchParams();
+  formData.append("resume", resume);
+  formData.append("job", job);
+
+  const res = await fetch("https://ai-resume-analyzers-and-job-fit.onrender.com/analyze", {
+    method: "POST",
+    body: formData
+  });
+
+  const data = await res.json();
+
+  document.getElementById("output").innerText =
+    "Score: " + data.score + "%\nSkills: " + data.skills + "\nMissing: " + data.missing;
+}
+</script>
+
+</body>
+</html>
