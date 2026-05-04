@@ -1,40 +1,51 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>AI Resume Analyzer</title>
+<title>AI Resume Analyzer</title>
 </head>
 
 <body>
 
 <h2>AI Resume Analyzer</h2>
 
-<textarea id="resume" placeholder="Enter resume" rows="4" cols="30"></textarea><br><br>
-
-<textarea id="job" placeholder="Enter job description" rows="4" cols="30"></textarea><br><br>
+<textarea id="resume" placeholder="Enter resume"></textarea><br><br>
+<textarea id="job" placeholder="Enter job description"></textarea><br><br>
 
 <button onclick="analyzeResume()">Analyze</button>
 
-<h3 id="result"></h3>
+<pre id="result"></pre>
 
 <script>
 async function analyzeResume() {
     const resume = document.getElementById("resume").value;
     const job = document.getElementById("job").value;
 
-    const response = await fetch("https://ai-resume-analyzers-and-job-fit.onrender.com/analyze", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: `resume=${encodeURIComponent(resume)}&job=${encodeURIComponent(job)}`
-    });
+    document.getElementById("result").innerText = "Loading...";
 
-    const data = await response.json();
+    try {
+        const res = await fetch("https://ai-resume-analyzers-and-job-fit.onrender.com/analyze", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: `resume=${encodeURIComponent(resume)}&job=${encodeURIComponent(job)}`
+        });
 
-    document.getElementById("result").innerText =
-        "Score: " + data.score + "\n" +
-        "Skills: " + data.skills + "\n" +
-        "Missing: " + data.missing;
+        if (!res.ok) {
+            throw new Error("Server error");
+        }
+
+        const data = await res.json();
+
+        document.getElementById("result").innerText =
+            "Score: " + data.score + "\n" +
+            "Skills: " + data.skills + "\n" +
+            "Missing: " + data.missing;
+
+    } catch (e) {
+        document.getElementById("result").innerText =
+            "Error: Backend not responding. Wait 30 seconds and try again.";
+    }
 }
 </script>
 
